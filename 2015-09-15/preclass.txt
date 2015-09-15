@@ -44,14 +44,14 @@ generations have been advanced. In this way, we would avoid having to
 write back to DRAM (or reading back from DRAM) between generations.
 
 However, this ignores the issue of communicating boundary cell
-information between blocks. To address this, we might start with
-ticking a starting block, then checking to see if any of the boundaries
-of this block have ambiguous states (i.e., not crowded from the given
-information). If one of the sides of the block have ambiguous states,
-then the neighboring block on the corresponding side would have to ticked
-(at least partially to determine the boundary cells), before the starting
-block could be ticked again. Not sure how we would handle the
-propagating boundary cell changes at the neighboring blocks.
+information between blocks. To address this, we could increase the
+"radius" of the block by the number of generations we want to compute at
+once. This way, each block would only need to read the cells in the block
+once and have all the information we need to compute the necessary
+generation advancements. One thing to keep in mind is that this buffer
+ring around the block (representing the output board) would overlap with
+neighboring blocks so that we would have to do redundant computation for
+the cells in the buffer ring for each block.
 
 4.  Comment on what would be required to parallelize this code
     according to the domain decomposition strategy outlined in the
@@ -62,9 +62,9 @@ A naive parallelization strategy would be to map each domain to a
 separate thread and load the area of the domain plus a one element
 padding so that each thread has all the information it needs to calculate
 the next generation for its domain. We would need to synchronize the
-threads with a barrier after every step in order to only swap the
-previous and current boards once the current board has been completely
-filled.
+threads with a barrier after every step (or some number of steps, using
+the algorithm above) in order to only swap the previous and current
+boards once the current board has been completely filled.
 
 As long as there is decent natural load balancing between the domains and
 the overhead of the barrier is not too high, we should see reasonable
