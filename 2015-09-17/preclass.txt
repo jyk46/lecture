@@ -6,8 +6,13 @@ that you can figure out the numerical jargon.
 
 0.  How much time did you spend on this pre-class exercise, and when?
 
+45 minutes; night before class.
+
 1.  What are one or two points that you found least clear in the
     9/17 slide decks (including the narration)?
+
+Not sure what the tradeoff between explicit/implicit time-stepping is
+just from looking at the slides.
 
 2.  Fill in the most straightforward implementation you can think of
     for multiplying a compressed sparse row matrix by a vector.
@@ -21,18 +26,28 @@ that you can figure out the numerical jargon.
           int* ptr; /* Offsets of the start of each row in pr
                        (ptr[n] = number of nonzeros) */
       } csr_t;
-    
+
       void sparse_multiply(csr_t* A, double* x, double* result)
       {
-          /* Fill in here */
-      } 
+          int i, j;
+          for (i = 0; i < A.n; ++i) {
+            int    start = A.ptr[i];
+            int    end   = A.ptr[i+1];
+            double sum   = 0.0;
+            for (j = start; j < end; ++j)
+              sum += A.pr[j] * x[A.col[j]]
+            result[i] = sum;
+          }
+      }
 
 3.  From the slides, complete the following short code:
 
       double laplacian_u(double (*u)(double x, double y),
                          double h, double x, double y)
       {
-          /* Estimate the Laplacian applied to u at (x,y) */
+          double du_dx = (u(x-h, y) - 2*u(x,y) + u(x+h, y)) / (h*h);
+          double du_dy = (u(x, y-h) - 2*u(x,y) + u(x, y+h)) / (h*h);
+          return du_dx + du_dy;
       }
 
     If you are unfamiliar with the syntax, the first argument to
@@ -61,3 +76,6 @@ that you can figure out the numerical jargon.
     several steps without communicating, can you describe how to
     similarly advance this scheme?  Are there any advantages to such
     an organization if there is only one core available?
+
+Even with one core, reducing communication still reduce the number of
+memory accesses required to pass on the results to the next super-step.
