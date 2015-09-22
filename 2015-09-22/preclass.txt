@@ -13,9 +13,19 @@
        time per trial (t_trial), and time to update the global
        counters in the critical section (t_update).
 
+               t_parallel            t_serial
+       tot_t = ((N * t_trial) / p) + (N/b * t_update)
+
     b) Run the code with a few different parameter values in order
        to estimate N, t_trial, and t_update for this code on
        a totient compute node.
+
+       tot_t(p,b)
+       tot_t(1,1) = t_parallel(1) + t_serial
+       tot_t(24,1) ~= t_serial
+       tot_t(1,1) - tot_t(24,1) ~= t_parallel(1)
+       tot_t(1,100) ~= t_parallel(1)
+       tot_t(1,1) - tot_t(1,100) ~= t_serial
 
     c) Based on your model, suggest a strategy for choosing the batch
        size.  How might you generalize this strategy to automatically

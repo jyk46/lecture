@@ -153,6 +153,7 @@ void workq_put(workq_t* workq, void* data)
     task_t* task = (task_t*) malloc(sizeof(task_t));
     task->data = data;
     task->next = workq->tasks;
+    // if (get_lock)
     workq->tasks = task;
 }
 
@@ -168,6 +169,7 @@ void* workq_get(workq_t* workq)
     if (workq->tasks) {
         task_t* task = workq->tasks;
         result = task->data;
+        // if (get_lock) otherwise go back to top
         workq->tasks = task->next;
         free(task);
     }
