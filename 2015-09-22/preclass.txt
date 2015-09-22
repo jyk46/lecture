@@ -21,16 +21,27 @@
        a totient compute node.
 
        tot_t(p,b)
-       tot_t(1,1) = t_parallel(1) + t_serial
-       tot_t(24,1) ~= t_serial
+       tot_t(1,1) = t_parallel(1) + t_serial = 0.0377s
+       tot_t(24,1) ~= t_serial = 0.0285s
        tot_t(1,1) - tot_t(24,1) ~= t_parallel(1)
-       tot_t(1,100) ~= t_parallel(1)
+       tot_t(1,100) ~= t_parallel(1) = 0.0249s
        tot_t(1,1) - tot_t(1,100) ~= t_serial
+
+       tot_t(p,b,n)
+       tot_t(24,10k,10M) = 10M * t_trial / 24 + 10M/10k * t_update
+       tot_t(24,20k,10M) = 10M * t_trial / 24 + 10M/20k * t_update
+       tot_t(24,5k,10M)  = 10M * t_trial / 24 + 10M/5k * t_update
 
     c) Based on your model, suggest a strategy for choosing the batch
        size.  How might you generalize this strategy to automatically
        choose batch sizes for different types of computational
        experiments?
+
+       Solely based on the model, it would be ideal to have the largest
+       batch size possible (i.e., b = N), in order to amortize the cost
+       of the synchronizations. However, increasing the batch size is
+       likely inversely proportional to the rate of convergence, so this
+       is something we would have to take into account.
     
 3.  In the workq subdirectory of this directory, there is a basic work
     queue implementation.  Following the strategy outlined in the
